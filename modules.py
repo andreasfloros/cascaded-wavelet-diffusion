@@ -2,6 +2,7 @@ import json
 import improved_diffusion
 import torch as th
 from torch.utils.data import DataLoader
+import torchvision as tv
 from typing import Any, Dict, List, Optional, Tuple
 import utils
 
@@ -256,13 +257,23 @@ class CascadedWaveletDiffuser(th.nn.Module):
         return x
 
     @th.no_grad()
-    def calculate_stats(self, dataloader: DataLoader) -> None:
+    def calculate_stats(self, data_path: str, batch_size: int = 1, num_workers: int = 0) -> None:
         """
         Calculate the normalization stats for the transforms.
 
         Args:
-            dataloader: the dataloader to use.
+            data_path: the path to the data.
+            batch_size: the batch size.
+            num_workers: the number of workers.
         """
+
+        transform = tv.transforms.Compose([
+            tv.transforms.ToTensor(),
+            tv.transforms.Normalize(mean=[0.5], std=[0.5])
+        ])
+
+        dataset = tv.datasets.ImageFolder(data_path, transform=transform)
+        dataloader = DataLoader(dataset, batch_size=batch_size, num_workers=num_workers, pin_memory=True)
 
         for wd in self.wds:
             wd.transform.details_mean.zero_()
@@ -271,7 +282,7 @@ class CascadedWaveletDiffuser(th.nn.Module):
             wd.transform.details_max.copy_(-th.inf)
         device = next(self.parameters()).device
 
-        num = len(dataloader.dataset)
+        num = len(dataset)
 
         for inpt, _ in dataloader:
             inpt = inpt.to(device)

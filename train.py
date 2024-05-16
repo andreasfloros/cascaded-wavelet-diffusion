@@ -61,7 +61,14 @@ def main(rank: int,
         ema = None
     model = DDP(model, device_ids=[rank])
     optim = th.optim.Adam(model.parameters(), lr=config["learning_rate"])
-    if load_path is not None:
+    if load_path is None:
+        if rank == 0:
+            print("No checkpoint path provided, starting from scratch. Calculating stats.")
+            start = time.perf_counter()
+        model.module.calculate_stats(data_path=data_path, batch_size=batch_size, num_workers=num_workers)
+        if rank == 0:
+            print(f"Calculated stats in {time.perf_counter() - start:.2f} seconds.")
+    else:
         utils.load_state(checkpoint_path=load_path,
                          model=model.module,
                          ema=ema,
