@@ -1,0 +1,15 @@
+{
+  "details_diffuser": {
+    "T": 1000,
+    "linear": true,
+    "unet": {
+      "base_channels": 128,
+      "num_res_attn_blocks": 2,
+      "channel_mults": [1, 2, 3, 4],
+      "is_attn": [false, false, false, true, true],
+      "num_heads": 4,
+      "dropout": 0.1,
+      "use_scale_shift_norm": false
+    }
+  }
+}

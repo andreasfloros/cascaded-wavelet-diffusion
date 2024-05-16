@@ -1,0 +1,19 @@
+{
+  "ema": true,
+  "levels": [
+    {
+      "coarse_steps": 1000,
+      "coarse_eta": 1.0,
+      "details_steps": 1000,
+      "details_eta": 1.0
+    },
+    {
+      "details_steps": 1000,
+      "details_eta": 1.0
+    },
+    {
+      "details_steps": 1000,
+      "details_eta": 1.0
+    }
+  ]
+}
