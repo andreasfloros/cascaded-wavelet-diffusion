@@ -72,5 +72,5 @@ if __name__ == "__main__":
          out_path=args.out_path,
          num_samples=args.num_samples,
          batch_size=args.batch_size,
-         sample_cfg_path=args.path_to_sample_config,
+         sample_cfg_path=args.sample_config_path,
          seed=args.seed)
