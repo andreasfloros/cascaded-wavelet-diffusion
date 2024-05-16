@@ -109,7 +109,7 @@ class Diffuser(th.nn.Module):
 
 class WaveletDiffuser(th.nn.Module):
     """
-    Wavelet diffuser module.
+    Wavelet diffuser module (basic cascade or super resolver).
     """
 
     def __init__(self,
@@ -117,7 +117,7 @@ class WaveletDiffuser(th.nn.Module):
                  dnc_cfg: Optional[Dict[str, Any]],
                  dnd_cfg: Dict[str, Any]) -> None:
         """
-        Initialize the model with configs from yaml. Note that the configs are consumed.
+        Initialize the model with configs. Note that the configs are consumed.
 
         Args:
             num_channels: the number of channels in the model.
