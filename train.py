@@ -67,7 +67,7 @@ def main(rank: int,
             start = time.perf_counter()
         model.module.calculate_stats(data_path=data_path, batch_size=batch_size, num_workers=num_workers)
         if rank == 0:
-            for wd, ema_wd in zip(model.wds, ema.module.wds):
+            for wd, ema_wd in zip(model.module.wds, ema.module.wds):
                 ema_wd.transform = wd.transform
             print(f"Calculated stats in {time.perf_counter() - start:.2f} seconds.")
     else:

@@ -3,8 +3,8 @@
     "T": 1000,
     "linear": true,
     "unet": {
-      "base_channels": 128,
-      "num_res_attn_blocks": 2,
+      "base_channels": 96,
+      "num_res_attn_blocks": 3,
       "channel_mults": [2, 2, 2],
       "is_attn": [false, true, true, false],
       "num_heads": 4,
@@ -16,8 +16,8 @@
     "T": 1000,
     "linear": true,
     "unet": {
-      "base_channels": 128,
-      "num_res_attn_blocks": 2,
+      "base_channels": 96,
+      "num_res_attn_blocks": 3,
       "channel_mults": [2, 2, 4],
       "is_attn": [false, true, true, false],
       "num_heads": 4,

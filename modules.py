@@ -101,7 +101,14 @@ class Diffuser(th.nn.Module):
         Rescale time.
         """
 
-        return t * 1000. / len(self.betas)
+        T = len(self.betas)
+        interval = 0.1 * T
+        small_interval = interval / 5
+
+        # https://openreview.net/pdf?id=WNkW0cOwiz
+        t = th.where(t > interval, t, th.floor(t / small_interval) * small_interval)
+
+        return t * 1000. / T
 
     def epsilon(self, x: th.Tensor, t: th.Tensor) -> th.Tensor:
         return self.unet(x, self.rescale_time(t))
