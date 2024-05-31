@@ -32,7 +32,7 @@ def main(checkpoint_path: str,
         ema = th.optim.swa_utils.AveragedModel(model,
                                                multi_avg_fn=th.optim.swa_utils.get_ema_multi_avg_fn(
                                                    config["ema_decay"]))
-        utils.load_state(checkpoint_path=checkpoint_path, model=model, ema=ema)
+        utils.load_state(checkpoint_path=checkpoint_path, ema=ema)
         model = ema.module
     else:
         utils.load_state(checkpoint_path=checkpoint_path, model=model)
