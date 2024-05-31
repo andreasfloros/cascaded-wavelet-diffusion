@@ -33,8 +33,6 @@ def main(checkpoint_path: str,
                                                multi_avg_fn=th.optim.swa_utils.get_ema_multi_avg_fn(
                                                    config["ema_decay"]))
         utils.load_state(checkpoint_path=checkpoint_path, model=model, ema=ema)
-        for wd, ema_wd in zip(model.wds, ema.module.wds):
-            ema_wd.transform = wd.transform
         model = ema.module
     else:
         utils.load_state(checkpoint_path=checkpoint_path, model=model)
