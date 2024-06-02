@@ -18,7 +18,7 @@ def main(rank: int,
          batch_size: int,
          epochs: int,
          load_path: Optional[str],
-         yaml_path: str,
+         config_path: str,
          save_path: str,
          data_path: str,
          num_workers: int,
@@ -30,7 +30,7 @@ def main(rank: int,
     dist.init_process_group(backend="nccl", rank=rank, world_size=world_size)
     th.cuda.set_device(rank)
 
-    with open(yaml_path, "r") as f:
+    with open(config_path, "r") as f:
         config = json.load(f)
 
     transform = []
@@ -56,7 +56,7 @@ def main(rank: int,
         ema = th.optim.swa_utils.AveragedModel(model,
                                                multi_avg_fn=th.optim.swa_utils.get_ema_multi_avg_fn(
                                                    config["ema_decay"]))
-        print(f"Loaded {yaml_path} model with {utils.count_parameters(model)} parameters.")
+        print(f"Loaded {config_path} model with {utils.count_parameters(model)} parameters.")
     else:
         ema = None
     model = DDP(model, device_ids=[rank])
