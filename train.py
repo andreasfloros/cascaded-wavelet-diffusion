@@ -101,7 +101,7 @@ def main(rank: int,
             optim.step()
             if rank == 0:
                 ema.update_parameters(model)
-                avg_loss += loss.item() / len(dataloader)
+                avg_loss += loss.detach() / len(dataloader)
         dist.barrier()
         if rank == 0:
             if epoch % save_every == 0:
@@ -109,7 +109,7 @@ def main(rank: int,
                                  model=model.module,
                                  ema=ema,
                                  optimizer=optim)
-            print(f"Epoch {str(epoch).zfill(len(str(epochs)))}/{epochs}, Avg Loss: {avg_loss:.6e}, \
+            print(f"Epoch {str(epoch).zfill(len(str(epochs)))}/{epochs}, Avg Loss: {avg_loss.item():.6e}, \
                     Time: {time.perf_counter() - start:.2f} s, Max Mem: {th.cuda.max_memory_allocated() / 1e9:.2f} GB",
                   flush=True)
     dist.destroy_process_group()
