@@ -217,7 +217,7 @@ class CascadedWaveletDiffuser(th.nn.Module):
 
         Args:
             num_channels: the number of channels in the model.
-            wd_cfgs: the wavelet diffuser configs.
+            wd_cfgs: the wavelet diffuser config paths.
         """
 
         super().__init__()
