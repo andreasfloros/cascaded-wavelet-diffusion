@@ -51,6 +51,7 @@ def main(rank: int,
     if rank == 0:
         print(f"{len(dataset)} images in {data_path}, {len(dataloader)} batches of size {batch_size}, {world_size} gpus.")  # noqa: E501
     model = modules.CascadedWaveletDiffuser(num_channels=config["num_channels"],
+                                            early_timestep_sharing=config["early_timestep_sharing"],
                                             wd_cfgs=config["levels"]).to(rank)
     if rank == 0:
         ema = th.optim.swa_utils.AveragedModel(model,

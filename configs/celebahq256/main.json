@@ -5,6 +5,7 @@
   "ema_decay": 0.9999,
   "horizontal_flip": true,
   "grad_clip": 1.0,
+  "early_timestep_sharing": true,
   "levels": [
     "configs/celebahq256/128-256.json",
     "configs/celebahq256/64-128.json",

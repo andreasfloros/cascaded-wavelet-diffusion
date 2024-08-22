@@ -38,8 +38,10 @@ class Diffuser(th.nn.Module):
                  out_channels: int,
                  T: int,
                  linear: bool,
+                 early_timestep_sharing: bool,
                  unet_cfg: Dict[str, Any]) -> None:
         super().__init__()
+        self.early_timestep_sharing = early_timestep_sharing
         self.unet = improved_diffusion.UNetModel(in_channels=in_channels,
                                                  out_channels=out_channels,
                                                  channel_mult=[1,] + unet_cfg["channel_mults"],
@@ -102,11 +104,12 @@ class Diffuser(th.nn.Module):
         """
 
         T = len(self.betas)
-        interval = 0.1 * T
-        small_interval = interval / 5
 
         # https://openreview.net/pdf?id=WNkW0cOwiz
-        t = th.where(t > interval, t, th.floor(t / small_interval) * small_interval)
+        if self.early_timestep_sharing:
+            interval = 0.1 * T
+            small_interval = interval / 5
+            t = th.where(t > interval, t, th.floor(t / small_interval) * small_interval)
 
         return t * 1000. / T
 
@@ -121,6 +124,7 @@ class WaveletDiffuser(th.nn.Module):
 
     def __init__(self,
                  num_channels: int,
+                 early_timestep_sharing: bool,
                  dnc_cfg: Optional[Dict[str, Any]],
                  dnd_cfg: Dict[str, Any]) -> None:
         """
@@ -128,6 +132,7 @@ class WaveletDiffuser(th.nn.Module):
 
         Args:
             num_channels: the number of channels in the model.
+            early_timestep_sharing: whether to use early timestep.
             dnc_cfg: the coarse diffuser config.
             dnd_cfg: the details diffuser config.
         """
@@ -136,10 +141,12 @@ class WaveletDiffuser(th.nn.Module):
         self.transform = hwt2d(num_channels=num_channels)
         self.dnc = Diffuser(in_channels=num_channels,
                             out_channels=num_channels,
+                            early_timestep_sharing=early_timestep_sharing,
                             unet_cfg=dnc_cfg.pop("unet"),
                             **dnc_cfg) if dnc_cfg is not None else None
         self.dnd = Diffuser(in_channels=4 * num_channels,
                             out_channels=3 * num_channels,
+                            early_timestep_sharing=early_timestep_sharing,
                             unet_cfg=dnd_cfg.pop("unet"),
                             **dnd_cfg)
 
@@ -211,12 +218,14 @@ class CascadedWaveletDiffuser(th.nn.Module):
 
     def __init__(self,
                  num_channels: int,
+                 early_timestep_sharing: bool,
                  wd_cfgs: List[str]) -> None:
         """
         Initialize the model with configs.
 
         Args:
             num_channels: the number of channels in the model.
+            early_timestep_sharing: whether to use early timestep.
             wd_cfgs: the wavelet diffuser config paths.
         """
 
@@ -226,6 +235,7 @@ class CascadedWaveletDiffuser(th.nn.Module):
             with open(wd_cfg, "r") as f:
                 config = json.load(f)
             self.wds.append(WaveletDiffuser(num_channels=num_channels,
+                                            early_timestep_sharing=early_timestep_sharing,
                                             dnc_cfg=config.get("coarse_diffuser", None),
                                             dnd_cfg=config["details_diffuser"]))
 

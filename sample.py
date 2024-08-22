@@ -25,6 +25,7 @@ def main(checkpoint_path: str,
     with open(config_path, "r") as f:
         config = json.load(f)
     model = modules.CascadedWaveletDiffuser(num_channels=config["num_channels"],
+                                            early_timestep_sharing=config["early_timestep_sharing"],
                                             wd_cfgs=config["levels"]).eval().to(device)
     with open(sample_cfg_path, "r") as f:
         sample_cfg = json.load(f)
