@@ -300,17 +300,18 @@ class CascadedWaveletDiffuser(th.nn.Module):
         device = next(self.parameters()).device
 
         num = len(dataset)
+        sizes = [0] * len(self.wds)
 
         for inpt, _ in dataloader:
             inpt = inpt.to(device)
-            for wd in self.wds:
+            for idx, wd in enumerate(self.wds):
                 inpt, details = wd.transform(inpt)
-                wd.transform.details_mean += inpt.shape[0] * details.mean(dim=(0, 2, 3), keepdim=True) / num
+                sizes[idx] = num * details.shape[2] * details.shape[3]
+                size = sizes[idx]
+                wd.transform.details_mean += details.sum(dim=(0, 2, 3), keepdim=True) / size
+                wd.transform.details_var += details.pow(2).sum(dim=(0, 2, 3), keepdim=True) / (size - 1)
                 wd.transform.details_min.copy_(th.min(wd.transform.details_min, details.min()))
                 wd.transform.details_max.copy_(th.max(wd.transform.details_max, details.max()))
 
-        for inpt, _ in dataloader:
-            inpt = inpt.to(device)
-            for wd in self.wds:
-                inpt, details = wd.transform(inpt)
-                wd.transform.details_var += inpt.shape[0] * (details - wd.transform.details_mean).pow(2).mean(dim=(0, 2, 3), keepdim=True) / (num - 1)  # noqa: E501
+        for size, wd in zip(sizes, self.wds):
+            wd.transform.details_var -= wd.transform.details_mean.pow(2) * size / (size - 1)
