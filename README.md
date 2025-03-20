@@ -15,11 +15,11 @@ Implementation of [Wavelet Score-Based Generative Modeling](https://openreview.n
       </td>
       <td align="center">
         <b>128x128</b><br>
-        <img src="assets/64.png" />
+        <img src="assets/128.png" />
       </td>
       <td align="center">
         <b>256x256</b><br>
-        <img src="assets/64.png" />
+        <img src="assets/256.png" />
       </td>
     </tr>
   </table>
